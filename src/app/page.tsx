@@ -1,10 +1,13 @@
-﻿'use client';
+﻿@"
+'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
+type Status = 'checking' | 'ok' | 'err';
+
 export default function Home() {
-  const [status, setStatus] = useState<'checking' | 'ok' | 'err'>('checking');
-  const [msg, setMsg] = useState<string>('');
+  const [status, setStatus] = useState<Status>('checking');
+  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -17,9 +20,10 @@ export default function Home() {
           setStatus('ok');
           setMsg('Connected to Supabase ✅');
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
+        const m = e instanceof Error ? e.message : String(e);
         setStatus('err');
-        setMsg(e?.message ?? 'Unknown error');
+        setMsg(m);
       }
     })();
   }, []);
@@ -32,3 +36,4 @@ export default function Home() {
     </main>
   );
 }
+"@ | Out-File -Encoding utf8 .\src\app\page.tsx
